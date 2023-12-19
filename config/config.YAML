@@ -1,0 +1,9 @@
+# config options for the app. This should be published in the repo
+# only place public info here. Private and secrets should be in the .env file
+STREAMLIT:
+  OPTIONS:
+    WELCOME_MESSAGE: "Welcome to the Streamlit app!"
+    COLOR_THEME: "dark"
+  IMAGES:
+    LOGO_PATH: "logo.png"
+    FAVICON: ":)"
