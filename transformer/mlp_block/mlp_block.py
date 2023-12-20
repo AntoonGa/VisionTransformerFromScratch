@@ -5,8 +5,6 @@ import torch
 from torch import nn
 from torchinfo import summary
 
-from config.settings import Settings
-
 
 class MachineLearningPerceptronBlock(nn.Module):
     def __init__(self, embedding_dims, mlp_size, mlp_dropout) -> None:
@@ -29,9 +27,7 @@ class MachineLearningPerceptronBlock(nn.Module):
 
 
 if __name__ == "__main__":
-    settings = Settings()
-    embedding_dims_ = settings.encoder.embedding_dims
-    mlp_block = MachineLearningPerceptronBlock(embedding_dims=embedding_dims_,
+    mlp_block = MachineLearningPerceptronBlock(embedding_dims=768,
                                                mlp_size=3072,
                                                mlp_dropout=0.1)
 

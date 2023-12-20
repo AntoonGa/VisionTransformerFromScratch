@@ -5,8 +5,6 @@ import torch
 from torch import nn
 from torchinfo import summary
 
-from config.settings import Settings
-
 
 class MultiHeadSelfAttentionBlock(nn.Module):
     def __init__(self,
@@ -36,9 +34,7 @@ class MultiHeadSelfAttentionBlock(nn.Module):
 
 
 if __name__ == "__main__":
-    settings = Settings()
-    embedding_dims_ = settings.encoder.embedding_dims
-    multihead_self_attention_block = MultiHeadSelfAttentionBlock(embedding_dims=embedding_dims_)
+    multihead_self_attention_block = MultiHeadSelfAttentionBlock(embedding_dims=768)
 
     summary(model=multihead_self_attention_block,
             input_size=(1, 197, 768),  # (batch_size, num_patches, embedding_dimension)

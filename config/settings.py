@@ -2,7 +2,8 @@
 Features:
 loads .env file and sets environment variables. .env file should contain secrets only
 load config.yaml and sets environment variables. config.yaml should contain public config only
-TODO: changing to a class based on dictionnary
+
+This is a placeholder for now. This file will be updated and used for scheduling training.
 """
 import os
 
@@ -74,10 +75,10 @@ class Settings:
 
 if __name__ == "__main__":
     settings = Settings()
-    print(settings.image.width)
-    print(settings.image.height)
-    print(settings.image.channels)
-    print(settings.training.batch_size)
-    print(settings.encoder.patch_size)
-    print(settings.encoder.embedding_dims)
-    print(settings.encoder.num_patches)
+    print(settings.image.width)  # noqa: T201
+    print(settings.image.height)  # noqa: T201
+    print(settings.image.channels)  # noqa: T201
+    print(settings.training.batch_size)  # noqa: T201
+    print(settings.encoder.patch_size)  # noqa: T201
+    print(settings.encoder.embedding_dims)  # noqa: T201
+    print(settings.encoder.num_patches)  # noqa: T201

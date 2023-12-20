@@ -5,7 +5,6 @@ import torch
 from torch import nn
 from torchinfo import summary
 
-from config.settings import Settings
 from transformer.mlp_block.mlp_block import MachineLearningPerceptronBlock
 from transformer.msa_block.msa_block import MultiHeadSelfAttentionBlock
 
@@ -35,9 +34,7 @@ class TransformerBlock(nn.Module):
 
 
 if __name__ == "__main__":
-    settings = Settings()
-    embedding_dims_ = settings.encoder.embedding_dims
-    transformer_block = TransformerBlock(embedding_dims=embedding_dims_)
+    transformer_block = TransformerBlock(embedding_dims=768)
 
     summary(model=transformer_block,
             input_size=(1, 197, 768),  # (batch_size, num_patches, embedding_dimension)
@@ -48,4 +45,3 @@ if __name__ == "__main__":
     x_data = torch.rand((32, 197, 768)).to("cuda")
     output = transformer_block(x_data)
     print("output_size", output.shape)  # noqa: T201
-

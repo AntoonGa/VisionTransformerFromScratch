@@ -6,8 +6,7 @@ import torch
 from torch import nn
 from torchinfo import summary
 
-from config.settings import Settings
-from core.data_worker.data_worker import DataWorker
+from core.data_fetcher.data_worker import DataWorker
 
 
 class PatchEmbeddingBlock(nn.Module):
@@ -50,12 +49,12 @@ class PatchEmbeddingBlock(nn.Module):
 
 
 if __name__ == "__main__":
-    settings = Settings()
-    channels_ = settings.image.channels
-    patch_size_ = settings.encoder.patch_size
-    num_of_patches_ = settings.encoder.num_patches
-    embedding_dim_ = settings.encoder.embedding_dims
-    batch_size_ = settings.training.batch_size
+    im_size = 224
+    channels_ = 3
+    patch_size_ = 16
+    num_of_patches_ = 196
+    embedding_dim_ = 768
+    batch_size_ = 32
 
     patch_embedding_layer = PatchEmbeddingBlock(channels_,
                                                 patch_size_,
@@ -63,14 +62,19 @@ if __name__ == "__main__":
                                                 embedding_dim_,
                                                 batch_size_)
     summary(model=patch_embedding_layer,
-            input_size=(batch_size_, 3, 224, 224),
+            input_size=(batch_size_, channels_, im_size, im_size),
             # (batch_size, input_channels, img_width, img_height)
             col_names=["input_size", "output_size", "num_params", "trainable"],
             col_width=20,
             row_settings=["var_names"])
 
-    data_source = "test"
-    data_worker = DataWorker(data_source, "cuda")
+    # grab data using the worker
+    data_worker_config = {"data_path": "data",
+                          "train_test_tag": "train",
+                          "batch_size": 32,
+                          "device": "cuda"}
+
+    data_worker = DataWorker(data_worker_config)
     random_images, random_labels = next(data_worker)
 
     patch_embeddings = patch_embedding_layer(random_images)

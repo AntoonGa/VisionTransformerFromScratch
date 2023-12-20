@@ -10,15 +10,17 @@ from core.image_preprocessing.image_transform import ImageTransformer
 
 
 class DataPreparer:
-    def __init__(self) -> None:
-        self.datadir = Path("data")
-        self.image_transformer = ImageTransformer()
-        self.batch_size = 32
+    """ Class to prepare the data loaders from the data folder"""
 
-    def create_transformed_dataloader(self, train_test_tag: str = "train") -> DataLoader | None:
+    def __init__(self, data_path: str = "data", batch_size: int = 32) -> None:
+        self.datadir = Path(data_path)
+        self.image_transformer = ImageTransformer()
+        self.batch_size = batch_size
+
+    def transformed_dataloader(self, train_test_tag: str = "train") -> DataLoader | None:
         """ create a dataset loader from a given directory"""
         dataloader = None
-        data = self._create_transformed_dataset(train_test_tag)
+        data = self._create_transformed_datafolder(train_test_tag)
         if train_test_tag == "train":
             # Create the training dataloader using DataLoader
             dataloader = DataLoader(
@@ -38,8 +40,8 @@ class DataPreparer:
 
         return dataloader
 
-    def _create_transformed_dataset(self, train_test_tag: str = "train") -> DatasetFolder | None:
-        """ create a dataset from a given directory
+    def _create_transformed_datafolder(self, train_test_tag: str = "train") -> DatasetFolder | None:
+        """ create a data folder from a given directory
         transformation are applied here for now. This is not the best place to do it"""
         if train_test_tag != "train" and train_test_tag != "test":
             log_string = "train_test_tag must be either train or test"
@@ -58,5 +60,5 @@ class DataPreparer:
 
 
 if __name__ == "__main__":
-    data_prepare = DataPreparer()
-    loader = data_prepare.create_transformed_dataloader("test")
+    data_prepare = DataPreparer("data", 32)
+    loader = data_prepare.transformed_dataloader("test")
