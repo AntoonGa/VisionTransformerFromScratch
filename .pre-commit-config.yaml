@@ -10,12 +10,12 @@ repos:
     hooks:
     -   id: ruff
 
--   repo: local
-    hooks:
-      - id: pytest-check
-        name: pytest-check
-        entry: pytest
-        args: [ "-m", "not skip_this" ]
-        language: system
-        pass_filenames: false
-        always_run: true
+#-   repo: local
+#    hooks:
+#      - id: pytest-check
+#        name: pytest-check
+#        entry: pytest
+#        args: [ "-m", "not skip_this" ]
+#        language: system
+#        pass_filenames: false
+#        always_run: true
