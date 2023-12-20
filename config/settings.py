@@ -2,103 +2,82 @@
 Features:
 loads .env file and sets environment variables. .env file should contain secrets only
 load config.yaml and sets environment variables. config.yaml should contain public config only
+TODO: changing to a class based on dictionnary
 """
 import os
-
-from dotenv import load_dotenv
 
 from config.load_config import load_config
 
 
-class AzureStorageSettings:
+class Image:
     @property
-    def connection_string(self) -> str:
-        return os.environ.get("AZURE_STORAGE_CONNECTION_STRING")
-
-    @property
-    def container_name(self) -> str:
-        return os.environ.get("AZURE_STORAGE_CONTAINER_NAME")
-
-
-class DBSettings:
-    @property
-    def db_name(self) -> str:
-        return os.environ.get("DB_NAME")
+    def width(self) -> int:
+        return int(os.environ.get("IMAGE_WIDTH"))
 
     @property
-    def user_name(self) -> str:
-        return os.environ.get("DB_USER_NAME")
+    def height(self) -> int:
+        return int(os.environ.get("IMAGE_HEIGHT"))
 
     @property
-    def password(self) -> str:
-        return os.environ.get("DB_PWD")
+    def channels(self) -> int:
+        return int(os.environ.get("IMAGE_CHANNELS"))
+
+
+class Training:
+    @property
+    def batch_size(self) -> int:
+        return int(os.environ.get("TRAINING_BATCH_SIZE"))
+
+
+class Encoder:
 
     @property
-    def host(self) -> str:
-        return os.environ.get("DB_HOST")
+    def patch_size(self) -> int:
+        return int(os.environ.get("ENCODER_PATCH_SIZE"))
 
     @property
-    def port(self) -> str:
-        return os.environ.get("DB_PORT")
+    def embedding_dims(self) -> int:
+        c = int(os.environ.get("IMAGE_CHANNELS"))
+        p = int(os.environ.get("ENCODER_PATCH_SIZE"))
+        a = int(c * p ** 2)
+        return a
 
     @property
-    def migration_path(self) -> str:
-        return os.environ.get("DB_MIGRATION_PATH")
-
-
-class StreamlitSettings:
-    @property
-    def welcome_message(self) -> str:
-        return os.environ.get("STREAMLIT_OPTIONS_WELCOME_MESSAGE")
-
-    @property
-    def color_theme(self) -> str:
-        return os.environ.get("STREAMLIT_OPTIONS_COLOR_THEME")
-
-    @property
-    def logo_path(self) -> str:
-        return os.environ.get("STREAMLIT_IMAGES_LOGO_PATH")
-
-    @property
-    def favicon(self) -> str:
-        return os.environ.get("STREAMLIT_IMAGES_FAVICON")
+    def num_patches(self) -> int:
+        h = int(os.environ.get("IMAGE_HEIGHT"))
+        w = int(os.environ.get("IMAGE_WIDTH"))
+        p = int(os.environ.get("ENCODER_PATCH_SIZE"))
+        a = int((h * w) / p ** 2)
+        return a
 
 
 class Settings:
     def __init__(
-        self, _env_path: str = None, _config_path: str = "./config/config.YAML"
+            self, _env_path: str = None, _config_path: str = "./config/config.YAML"
     ) -> None:
         # load .env (for local secrets only, connection strings, db passwords etc.)
-        load_dotenv(_env_path)
         # load .yaml config and push to env variables
         load_config(_config_path)
 
     @property
-    def azure_storage(self) -> AzureStorageSettings:
-        return AzureStorageSettings()
+    def image(self) -> Image:
+        return Image()
 
     @property
-    def db(self) -> DBSettings:
-        return DBSettings()
+    def training(self) -> Training:
+        return Training()
 
     @property
-    def streamlit(self) -> StreamlitSettings:
-        return StreamlitSettings()
+    def encoder(self) -> Encoder:
+        return Encoder()
 
 
-if __name__ == "__main__":  # pragma: no cover
-    env_path = "tests/test_data/.env_tests"
-    config_path = "tests/test_data/config_tests.YAML"
-    settings = Settings(env_path, config_path)
-    print(settings.azure_storage.connection_string)  # noqa: T201
-    print(settings.azure_storage.container_name)  # noqa: T201
-    print(settings.db.db_name)  # noqa: T201
-    print(settings.db.user_name)  # noqa: T201
-    print(settings.db.password)  # noqa: T201
-    print(settings.db.host)  # noqa: T201
-    print(settings.db.port)  # noqa: T201
-    print(settings.db.migration_path)  # noqa: T201
-    print(settings.streamlit.welcome_message)  # noqa: T201
-    print(settings.streamlit.color_theme)  # noqa: T201
-    print(settings.streamlit.logo_path)  # noqa: T201
-    print(settings.streamlit.favicon)  # noqa: T201
+if __name__ == "__main__":
+    settings = Settings()
+    print(settings.image.width)
+    print(settings.image.height)
+    print(settings.image.channels)
+    print(settings.training.batch_size)
+    print(settings.encoder.patch_size)
+    print(settings.encoder.embedding_dims)
+    print(settings.encoder.num_patches)

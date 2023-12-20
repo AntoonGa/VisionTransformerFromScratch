@@ -5,12 +5,14 @@ import torch
 from torch import nn
 from torchinfo import summary
 
+from config.settings import Settings
+
 
 class MultiHeadSelfAttentionBlock(nn.Module):
     def __init__(self,
-                 embedding_dims=768,  # Hidden Size D in the ViT Paper Table 1
-                 num_heads=12,  # Heads in the ViT Paper Table 1
-                 attn_dropout=0.0
+                 embedding_dims: int = 768,  # Hidden Size D in the ViT Paper Table 1
+                 num_heads: int = 12,  # Heads in the ViT Paper Table 1
+                 attn_dropout: float = 0.0
                  # Default to Zero as there is no dropout for the the MSA Block as per the ViT Paper
                  ) -> None:
         super().__init__()
@@ -21,20 +23,22 @@ class MultiHeadSelfAttentionBlock(nn.Module):
 
         self.layernorm = nn.LayerNorm(normalized_shape=embedding_dims)
 
-        self.multiheadattention = nn.MultiheadAttention(num_heads=num_heads,
-                                                        embed_dim=embedding_dims,
-                                                        dropout=attn_dropout,
-                                                        batch_first=True,
-                                                        )
+        self.multihead_attention = nn.MultiheadAttention(num_heads=num_heads,
+                                                         embed_dim=embedding_dims,
+                                                         dropout=attn_dropout,
+                                                         batch_first=True,
+                                                         )
 
-    def forward(self, x) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.layernorm(x)
-        output, _ = self.multiheadattention(query=x, key=x, value=x, need_weights=False)
+        output, _ = self.multihead_attention(query=x, key=x, value=x, need_weights=False)
         return output
 
 
 if __name__ == "__main__":
-    multihead_self_attention_block = MultiHeadSelfAttentionBlock()
+    settings = Settings()
+    embedding_dims_ = settings.encoder.embedding_dims
+    multihead_self_attention_block = MultiHeadSelfAttentionBlock(embedding_dims=embedding_dims_)
 
     summary(model=multihead_self_attention_block,
             input_size=(1, 197, 768),  # (batch_size, num_patches, embedding_dimension)
@@ -42,6 +46,6 @@ if __name__ == "__main__":
             col_width=20,
             row_settings=["var_names"])
 
-    x = torch.rand((32, 197, 768))
-    output = multihead_self_attention_block(x)
-    print("output_size", output.shape)  # noqa: T201
+    x = torch.rand((32, 197, 768)).to("cuda")
+    msa_out = multihead_self_attention_block(x)
+    print("output_size", msa_out.shape)  # noqa: T201
