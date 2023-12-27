@@ -7,12 +7,17 @@ import torch
 from sklearn.metrics import confusion_matrix
 from torch.utils.data import DataLoader
 
+from shared_modules.dir_handler import DirectoryHandler
+
 
 class DisplayEngine:
     """ Computes and displays the predictions of a model on a batch of images"""
 
-    def __init__(self, save_path : str = r"./last_training_results") -> None:
+    def __init__(self, save_path: str = r"./simplevit_mnist/training_results") -> None:
+        # Create the folder if it doesn't exist
         self.save_path = save_path
+        DirectoryHandler.create_folder_if_not_exists(save_path)
+
         self.epoch = 0
 
     def plot_all(self,
