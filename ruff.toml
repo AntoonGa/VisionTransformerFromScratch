@@ -21,6 +21,8 @@ exclude = [
     "dist",
     "node_modules",
     "venv",
+    ".png",
+    ".legacy"
 ]
 
 target-version = "py311"
@@ -42,6 +44,7 @@ ignore = [
     "SIM105", # Exception handler
     "PTH", # proper use of PATH package
     "B008", #Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+    "T201", # ignore print statements
      # proper usage of pandas
     # TO IGNORE:
     "S301", # `pickle` and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue

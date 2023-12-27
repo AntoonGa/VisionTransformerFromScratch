@@ -3,3 +3,6 @@ torchvision~=0.16.2
 torch~=2.1.2
 matplotlib~=3.8.0
 torchinfo~=1.8.0
+numpy~=1.26.2
+scikit-learn~=1.2.2
+tqdm~=4.65.0
