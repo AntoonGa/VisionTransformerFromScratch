@@ -21,9 +21,11 @@ exclude = [
     "dist",
     "node_modules",
     "venv",
+    ".png",
+    ".legacy"
 ]
 
-target-version = "py310"
+target-version = "py311"
 
 [lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
@@ -42,12 +44,14 @@ ignore = [
     "SIM105", # Exception handler
     "PTH", # proper use of PATH package
     "B008", #Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+    "T201", # ignore print statements
      # proper usage of pandas
     # TO IGNORE:
     "S301", # `pickle` and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue
     "FBT", # This limits the use of default boolean arguments in function definitions
     "C", # McCabe complexity ignored
     "S101", #Use of `assert` detected
+    "ANN001", #Allow typing Any in import statements
     "ANN101", #Missing type annotation for `self` in method
     "ANN102", #Missing type annotation for `cls` in classmethod
     "ANN002", #Missing type annotation for *arg

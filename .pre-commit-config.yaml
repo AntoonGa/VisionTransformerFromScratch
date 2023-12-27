@@ -1,6 +1,4 @@
-# precommit hook: runs this pipeline when trying to commit (local only)
 repos:
-    # check static code quality using ruff
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
     hooks:
@@ -11,6 +9,13 @@ repos:
     rev: v0.1.6
     hooks:
     -   id: ruff
-        args: [ --fix ]
-    -   id: ruff-format
 
+#-   repo: local
+#    hooks:
+#      - id: pytest-check
+#        name: pytest-check
+#        entry: pytest
+#        args: [ "-m", "not skip_this" ]
+#        language: system
+#        pass_filenames: false
+#        always_run: true

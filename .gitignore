@@ -1,2 +1,8 @@
 /.idea
 /.git
+/.ruff_cache/
+/data/
+__pycache__/
+/.legacy/
+/simplevit_mnist/last_training_results/
+/simplevit_mnist/datasets/
