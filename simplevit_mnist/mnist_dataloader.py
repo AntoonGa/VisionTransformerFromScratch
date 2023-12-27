@@ -5,20 +5,26 @@ from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
 from torchvision.transforms import ToTensor
 
+from shared_modules.dir_handler import DirectoryHandler
+
 
 class MnistDataLoader:
 
     @staticmethod
-    def get_dataloaders(batch_size: int) -> tuple[DataLoader, DataLoader]:
+    def get_dataloaders(batch_size: int,
+                        save_path: str) -> tuple[DataLoader, DataLoader]:
         """ generate dataloaders from MNIST dataset"""
+        # Create the folder if it doesn't exist
+        DirectoryHandler.create_folder_if_not_exists(save_path)
+
         # prepare dataset and dataloader
         transform = ToTensor()
-        train_set = MNIST(root="./transformer_3/datasets",
+        train_set = MNIST(root=save_path,
                           train=True,
                           download=True,
                           transform=transform
                           )
-        test_set = MNIST(root="./transformer_3/datasets",
+        test_set = MNIST(root=save_path,
                          train=False,
                          download=True,
                          transform=transform

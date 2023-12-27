@@ -6,11 +6,13 @@ from simplevit_mnist.mnist_dataloader import MnistDataLoader
 from simplevit_mnist.model_configurator import SimpleViTConfigurator
 from simplevit_mnist.train_engine import TrainEngine
 
-save_path = r"./transformer_3/last_training_results"
+save_path = r"./simplevit_mnist/data"
 
 # prepare dataset and dataloader
 batch_size = 1024
-train_dataloader, test_dataloader = MnistDataLoader.get_dataloaders(batch_size=batch_size)
+dataset_path = save_path + "/datasets"
+train_dataloader, test_dataloader = MnistDataLoader.get_dataloaders(batch_size=batch_size,
+                                                                    save_path=dataset_path)
 
 # generate model, optimizer and loss function
 model, optimizer, loss_fn, device = SimpleViTConfigurator.get_vit_config(batch_size=1024,
@@ -27,6 +29,7 @@ model, optimizer, loss_fn, device = SimpleViTConfigurator.get_vit_config(batch_s
 
 # Train the model and save the training results to a dictionary/figures
 epoch = 25
+save_path = save_path + "/training_results"
 results = TrainEngine.train(model=model,
                             train_dataloader=train_dataloader,
                             test_dataloader=test_dataloader,
