@@ -6,3 +6,6 @@ torchinfo~=1.8.0
 numpy~=1.26.2
 scikit-learn~=1.2.2
 tqdm~=4.65.0
+
+pillow~=10.1.0
+timm~=0.9.12
