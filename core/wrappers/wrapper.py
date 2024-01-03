@@ -2,6 +2,8 @@
 Author: {author} || Date: {date}
 Features:
 """
+from typing import Union
+
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
@@ -9,7 +11,7 @@ from tqdm import tqdm
 
 class Wrapper:
     """ wrapper pipeline for pytorch models
-    This is used to train and validate models"""
+    This is used to train, validate and run predictions"""
 
     def __init__(self,
                  model: torch.nn.Module,
@@ -32,7 +34,7 @@ class Wrapper:
         self.train_losses, self.val_losses = [], []
         self.train_acc, self.val_acc = [], []
 
-    def evaluate(self, dataloader: DataLoader = None) -> tuple[float, float]:
+    def evaluate(self, dataloader: DataLoader) -> tuple[float, float]:
         """ return loss and accuracy over the entire dataloader """
         self.model.eval()
         running_loss = 0.0
@@ -51,17 +53,53 @@ class Wrapper:
         acc = correct_predictions / nb_samples
         return loss, acc
 
-    def predict(self, dataloader: DataLoader = None) -> list:
-        """ return class predictions over the entire dataloader """
+    def predict_class(self, data_input: Union[DataLoader, torch.tensor]) -> list:
+        """ return class predictions over the entire dataloader or a single batch """
         self.model.eval()
-        all_predictions = []
 
         with torch.no_grad():
-            for inputs, _ in dataloader:
-                inputs = inputs.to(self.device)
-                outputs = self.model(inputs)
-                _, predicted = torch.max(outputs, 1)
-                all_predictions.extend(predicted.cpu().numpy())
+            all_predictions = []
+            # if dataloader is a dataloader, iterate over it
+            if isinstance(data_input, DataLoader):
+                for inputs, _ in data_input:
+                    inputs = inputs.to(self.device)
+                    outputs = self.model(inputs)
+                    _, predicted = torch.max(outputs, 1)
+                    all_predictions.extend(predicted.cpu().numpy())
+            else:
+                # if dataloader is a tensor, evaluate the tensor inputs
+                try:
+                    inputs = data_input.to(self.device)
+                    outputs = self.model(inputs)
+                    _, predicted = torch.max(outputs, 1)
+                    all_predictions.extend(predicted.cpu().numpy())
+                except Exception as e:
+                    string = f"Error: {e}"
+                    raise ValueError(string)  # noqa: B904
+
+        return all_predictions
+
+    def predict(self, data_input: Union[DataLoader, torch.tensor]) -> list:
+        """ return probabilities predictions over the entire dataloader or a single batch """
+        self.model.eval()
+
+        with torch.no_grad():
+            all_predictions = []
+            # if dataloader is a dataloader, iterate over it
+            if isinstance(data_input, DataLoader):
+                for inputs, _ in data_input:
+                    inputs = inputs.to(self.device)
+                    outputs = self.model(inputs)
+                    all_predictions.extend(outputs.cpu().numpy())
+            else:
+                # if dataloader is a tensor, evaluate the tensor inputs
+                try:
+                    inputs = data_input.to(self.device)
+                    outputs = self.model(inputs)
+                    all_predictions.extend(outputs.cpu().numpy())
+                except Exception as e:
+                    string = f"Error: {e}"
+                    raise ValueError(string)  # noqa: B904
 
         return all_predictions
 
