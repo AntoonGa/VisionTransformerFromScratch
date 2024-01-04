@@ -9,5 +9,4 @@ __pycache__/
 /transformer_3/datasets/
 /transformer_3/last_training_results/
 /simplevit_mnist/data/
-qodana.yaml
 /datasets/

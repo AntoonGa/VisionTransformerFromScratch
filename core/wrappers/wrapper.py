@@ -17,22 +17,50 @@ class Wrapper:
                  model: torch.nn.Module,
                  optimizer: torch.optim.Optimizer,
                  criterion: torch.nn.Module,
-                 device: str = "cuda") -> None:
+                 device: torch.device = None) -> None:
         """ initialize trainer pipeline
         Args:
             model: pytorch model
             optimizer: pytorch optimizer
             criterion: pytorch loss function
             device: device to run the model on """
+        if device is None:
+            # if device is not specified, use cuda if available
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        else:
+            self.device = device
 
         self.optimizer = optimizer
         self.criterion = criterion
-        self.device = device
         self.model = model.to(self.device)
 
         # initialize lists for storing losses at each epoch
         self.train_losses, self.val_losses = [], []
         self.train_acc, self.val_acc = [], []
+
+    def fit(self,
+            epochs: int = 5,
+            train_dataloader: DataLoader = None,
+            valid_dataloader: DataLoader = None,
+            ) -> None:
+        """ train model for a number of epochs
+        Args:
+            epochs: number of epochs to train for
+            train_dataloader: dataloader for training dataset
+            valid_dataloader: dataloader for validation dataset """
+
+        # run training and validation on each epoch
+        for epoch in tqdm(range(epochs), desc="Epochs:"):
+            self._train_on_dataset(train_dataloader)
+            self._validate_on_dataset(valid_dataloader)
+
+            print(
+                f"| Epoch {epoch + 1}/{epochs} | "
+                f"T-loss: {self.train_losses[-1]:.3f} | "
+                f"V-loss: {self.val_losses[-1]:.3f} |"
+                f"T-acc: {self.train_acc[-1]:.2f} |"
+                f"V-acc: {self.val_acc[-1]:.2f}"
+            )
 
     def evaluate(self, dataloader: DataLoader) -> tuple[float, float]:
         """ return loss and accuracy over the entire dataloader """
@@ -103,37 +131,15 @@ class Wrapper:
 
         return all_predictions
 
-    def fit(self,
-            epochs: int = 5,
-            train_dataloader: DataLoader = None,
-            valid_dataloader: DataLoader = None,
-            ) -> None:
-        """ train model for a number of epochs
-        Args:
-            epochs: number of epochs to train for
-            train_dataloader: dataloader for training dataset
-            valid_dataloader: dataloader for validation dataset """
-
-        # run training and validation on each epoch
-        for epoch in tqdm(range(epochs), desc="Epochs:"):
-            self._train_on_dataset(train_dataloader)
-            self._validate_on_dataset(valid_dataloader)
-
-            print(
-                f"| Epoch {epoch + 1}/{epochs} | "
-                f"T-loss: {self.train_losses[-1]:.3f} | "
-                f"V-loss: {self.val_losses[-1]:.3f} |"
-                f"T-acc: {self.train_acc[-1]:.2f} |"
-                f"V-acc: {self.val_acc[-1]:.2f}"
-            )
-
     def _train_on_dataset(self, train_dataloader: DataLoader) -> None:
         """ run an epoch of training on the entire dataset"""
+
         # training phase
         self.model.train()
         running_loss = 0.0
         correct_predictions = 0
         nb_samples = len(train_dataloader.dataset)
+
         for x_data, labels in train_dataloader:
             x_data = x_data.to(self.device, non_blocking=True)
             labels = labels.to(self.device, non_blocking=True)
