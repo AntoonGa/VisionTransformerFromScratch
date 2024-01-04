@@ -10,7 +10,7 @@ Each model/dataset are documented in a J.notebook.
 - Runs on a 3Go GPU with BS 512.
 - Reaches 98% acc on MNIST after 10 epochs (1 minutes on a 3070ti/5600x).
 - 60% acc on PlayingCard dataset (small dataset)
--
+
 ![GridSample - Epoch 25.png](assets%2FGridSample%20-%20Epoch%2025.png)
 
 ![confusion - Epoch 25.png](assets%2Fconfusion%20-%20Epoch%2025.png)
@@ -19,6 +19,8 @@ Each model/dataset are documented in a J.notebook.
 - An efficient CNN model
 - Particularly efficient on small datasets (use pretrained!)
 - Reaches 99% acc on MNIST after 1 epoch
+
+![effi_mnist_learningcurve.png](assets%2Feffi_mnist_learningcurve.png)
 
 ### TODO:
 - Adding profiler to the training loop.
@@ -29,6 +31,7 @@ Each model/dataset are documented in a J.notebook.
 
 ### References:
 SimpleVit: https://arxiv.org/abs/2205.01580
+
 EfficientNet: https://arxiv.org/abs/1905.11946
 
 
