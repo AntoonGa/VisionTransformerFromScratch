@@ -9,9 +9,11 @@ Overriding the __len__ method allows for the len() function to be used on the da
 import os
 
 import torch
-import torchvision.transforms as transforms
+import torchvision.transforms.v2 as transforms
 from torch.utils.data import DataLoader, Dataset
 from torchvision.datasets import ImageFolder
+
+from shared_modules.display_engine import DisplayImages
 
 
 class PlayingCardDataset(Dataset):
@@ -54,8 +56,10 @@ if __name__ == "__main__":
 
     # setting up transformation
     transformation = transforms.Compose([
+        transforms.ToImage(),
+        transforms.ToDtype(torch.float32, scale=True),
         transforms.Resize((128, 128)),
-        transforms.ToTensor(),
+        # transforms.RandomHorizontalFlip(p=0.5),
     ])
     type(transformation)
 
@@ -72,7 +76,10 @@ if __name__ == "__main__":
 
     print(len(dataloader.dataset))
     # iterating over the dataset
-    for _, (image, label) in enumerate(dataloader):
+    for idx, (image, label) in enumerate(dataloader):
         print(image.shape)
         print(label.shape)
-        break
+        print(image[0])
+        # display image grid
+        DisplayImages.display_image(image, label, grid_x=4, grid_y=4)
+        print(idx)

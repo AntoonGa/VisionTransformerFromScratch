@@ -6,7 +6,7 @@ from typing import Union
 
 import torch
 from torch.utils.data import DataLoader
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 
 
 class Wrapper:
@@ -161,7 +161,7 @@ class Wrapper:
                         correct_predictions: int = 0) -> tuple[float, int]:
         """ run a single training step on a batch of data
         updates running_loss and running_accuracy and returns them """
-        self.optimizer.zero_grad()
+        self.optimizer.zero_grad(set_to_none=True)
         preds = self.model(x_batch)
         loss = self.criterion(preds, labels_batch)
         loss.backward()
