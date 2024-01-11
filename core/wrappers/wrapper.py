@@ -6,7 +6,7 @@ from typing import Union
 
 import torch
 from torch.utils.data import DataLoader
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 
 class Wrapper:
@@ -50,7 +50,8 @@ class Wrapper:
             valid_dataloader: dataloader for validation dataset """
 
         # run training and validation on each epoch
-        for epoch in tqdm(range(epochs), desc="Epochs:"):
+        for epoch in range(epochs):
+            print(f"Epoch {epoch + 1}/{epochs}")
             self._train_on_dataset(train_dataloader)
             self._validate_on_dataset(valid_dataloader)
 
@@ -140,11 +141,11 @@ class Wrapper:
         correct_predictions = 0
         nb_samples = len(train_dataloader.dataset)
 
-        for x_data, labels in train_dataloader:
-            x_data = x_data.to(self.device, non_blocking=True)
-            labels = labels.to(self.device, non_blocking=True)
-            running_loss, correct_predictions = self._train_on_batch(x_data,
-                                                                     labels,
+        for x_data, labels in tqdm(train_dataloader, position=0, leave=True):
+            running_loss, correct_predictions = self._train_on_batch(x_data.to(self.device,
+                                                                               non_blocking=True),
+                                                                     labels.to(self.device,
+                                                                               non_blocking=True),
                                                                      running_loss,
                                                                      correct_predictions)
 
@@ -161,7 +162,7 @@ class Wrapper:
                         correct_predictions: int = 0) -> tuple[float, int]:
         """ run a single training step on a batch of data
         updates running_loss and running_accuracy and returns them """
-        self.optimizer.zero_grad()
+        self.optimizer.zero_grad(set_to_none=True)
         preds = self.model(x_batch)
         loss = self.criterion(preds, labels_batch)
         loss.backward()
@@ -178,21 +179,21 @@ class Wrapper:
         """ run validation on the entire dataset"""
         self.model.eval()
         running_loss = 0.0
-        correct_predictions = 0
+        correct_preds = 0
         nb_samples = len(valid_dataloader.dataset)
         with torch.no_grad():
             for x_data, labels in valid_dataloader:
-                x_data = x_data.to(self.device, non_blocking=True)
-                labels = labels.to(self.device, non_blocking=True)
-                running_loss, correct_predictions = self._validate_on_batch(x_data,
-                                                                            labels,
-                                                                            running_loss,
-                                                                            correct_predictions)
+                running_loss, correct_preds = self._validate_on_batch(x_data.to(self.device,
+                                                                                non_blocking=True),
+                                                                      labels.to(self.device,
+                                                                                non_blocking=True),
+                                                                      running_loss,
+                                                                      correct_preds)
 
         val_loss = running_loss / nb_samples
         self.val_losses.append(val_loss)
 
-        val_acc = correct_predictions / nb_samples
+        val_acc = correct_preds / nb_samples
         self.val_acc.append(val_acc)
 
     def _validate_on_batch(self,
