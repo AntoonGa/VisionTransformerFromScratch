@@ -18,6 +18,7 @@ class DisplayImages:
         # Visualize the dataset in a grid
         fig, axes = plt.subplots(grid_x, grid_y, figsize=fig_size)
         for i, ax in enumerate(axes.flat):
+            # convert to float32
             img = images[i].permute((1, 2, 0)).cpu().numpy()
             ax.imshow(img, cmap="YlOrRd")
             try:
