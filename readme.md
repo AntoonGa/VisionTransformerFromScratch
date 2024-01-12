@@ -5,7 +5,7 @@ To use this repo just run any script in the "jobs" folder.
 The wrapper class is used as a Keras/Lightning implementation without the hassle.
 I've taken care of optimizing training and loading such as to get maximum duty cycle on the GPU.
 - For faster IO use the HDF5 converter which will increase image loading by about 50%
-- A custom Pytorch Dataloader is available to avoid the famous lag at each epoch.
+- A custom Pytorch Dataloader is available to avoid the famous lag at each epoch
 
 The code is abstract enough such as to accommodate any image datasets.
 
@@ -43,6 +43,9 @@ SimpleVit:
 
 EfficientNet:
 - https://arxiv.org/abs/1905.11946
+
+Multiepoch Dataloader:
+- https://github.com/yoniaflalo
 
 
 ## TODO:
