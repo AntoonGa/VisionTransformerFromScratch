@@ -13,6 +13,12 @@ class DisplayImages:
                       grid_y: int = 6,
                       ) -> None:
         """ Display a grid of samples/prediction/labels """
+        # maximum size of the grid correction
+        n = len(labels)
+        if n < grid_x * grid_y:
+            grid_x = int(np.sqrt(n))
+            grid_y = int(np.sqrt(n))
+
         fig_size = (grid_y * 2, grid_x * 2)
 
         # Visualize the dataset in a grid
