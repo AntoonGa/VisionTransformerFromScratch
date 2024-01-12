@@ -10,3 +10,4 @@ __pycache__/
 /transformer_3/last_training_results/
 /simplevit_mnist/data/
 /datasets/
+profile_results.txt
