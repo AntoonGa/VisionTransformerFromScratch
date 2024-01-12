@@ -7,22 +7,22 @@ import os
 import h5py
 import numpy as np
 import torch
+import torchvision.transforms.v2 as transforms
 from torch.utils.data import DataLoader
-from torchvision import transforms
 from torchvision.datasets import ImageFolder
 from tqdm import tqdm
 
 
 def create_hdf5_dataset(images_path: str,
                         hdf5_save_path: str,
-                        target_size: tuple[int, int] = (128, 128),
-                        channels: int = 3) -> None:
+                        target_size: tuple[int, int] = (128, 128)) -> None:
     """ Create an hdf5 database file from a folder containing images.
     The images are resized to the target_size and stored in the hdf5 file.
-    This is useful when your dataset cannot fit in RAM and the data consits of many images"""
-    transform = transforms.Compose([
-        transforms.Resize(target_size),
-        transforms.ToTensor(),
+    This is useful when your dataset cannot fit in RAM and the data consists of many images"""
+    transformation = transforms.Compose([
+        transforms.ToImage(),
+        transforms.ToDtype(torch.float32, scale=True),
+        transforms.Resize(target_size, antialias=True)
     ])
 
     # check if data_dir points towards an existing directory
@@ -32,72 +32,71 @@ def create_hdf5_dataset(images_path: str,
 
     # generate dataset
     try:
-        data = ImageFolder(root=images_path, transform=transform)
-        # set chunk size for loading data and appending to hdf5 file
-        chunk_size = min(int(len(data) / 10), 1000)
+        data = ImageFolder(root=images_path, transform=transformation)
     except Exception as e:
         raise e
-
+    # metadata
+    channels = data[0][0].shape[0]
+    classes = data.classes
     num_images = len(data)
+    # set chunk size for loading data and appending to hdf5 file
+    chunk_size = 1000
 
     # open the hdf5 file
     with h5py.File(hdf5_save_path, "w") as file:
         # Create datasets with chunks for efficient storage
         img_dataset = file.create_dataset("images", shape=(num_images,
-                                                           channels,
                                                            target_size[0],
-                                                           target_size[1]),
+                                                           target_size[1],
+                                                           channels),
                                           dtype="float32", chunks=None)
-        lbl_dataset = file.create_dataset("labels", shape=(num_images,),
+        lbl_dataset = file.create_dataset("labels", shape=num_images,
                                           dtype="int64", chunks=None)
+
+        clc_dataset = file.create_dataset("classes",  # noqa: F841
+                                          data=np.array(classes, dtype="S"))
 
         loader = DataLoader(data, batch_size=chunk_size, shuffle=False)
 
-        current_index = 0
+        curr_index = 0
         # start batch processing (to avoid RAM overflow)
         for images, labels in tqdm(loader):
             chunk_size = images.size(0)
 
-            images = np.array(images)
-            labels = np.array(labels)
+            # This permute is necessary to invert the default conversion from PIL to Tensor
+            imgs = images.clone().detach()
+            imgs = imgs.permute(0, 2, 3, 1)
 
-            img = torch.tensor(images, dtype=torch.float32)
-            lbl = torch.tensor(labels, dtype=torch.long)
+            lbls = labels.clone().detach()
 
-            img_dataset[current_index:current_index + chunk_size] = img
-            lbl_dataset[current_index:current_index + chunk_size] = lbl
+            img_dataset[curr_index:curr_index + chunk_size] = imgs
+            lbl_dataset[curr_index:curr_index + chunk_size] = lbls
 
-            current_index += chunk_size
+            curr_index += chunk_size
 
 
-# %%
 if __name__ == "__main__":
-    # Example usage
-    root_folder = r"datasets/birds/train"
-    hdf5_file = r"datasets/birds/train.hdf5"
-    create_hdf5_dataset(root_folder, hdf5_file)
-
-    root_folder = r"datasets/birds/test"
-    hdf5_file = r"datasets/birds/test.hdf5"
-    create_hdf5_dataset(root_folder, hdf5_file)
-
-    root_folder = r"datasets/birds/valid"
-    hdf5_file = r"datasets/birds/valid.hdf5"
-    create_hdf5_dataset(root_folder, hdf5_file)
-
-    root_folder = r"datasets/playing_cards/train"
-    hdf5_file = r"datasets/playing_cards/train.hdf5"
-    create_hdf5_dataset(root_folder, hdf5_file)
-
-    root_folder = r"datasets/playing_cards/test"
-    hdf5_file = r"datasets/playing_cards/test.hdf5"
-    create_hdf5_dataset(root_folder, hdf5_file)
-
-    root_folder = r"datasets/playing_cards/valid"
-    hdf5_file = r"datasets/playing_cards/valid.hdf5"
-    create_hdf5_dataset(root_folder, hdf5_file)
-
-    # Use CustomDataset with the created HDF5 file
-    # dataset = Hdf5Dataset(hdf5_save_path)
-    # print(len(dataset))
-    # print(dataset[0])
+    # root_folder = r"datasets/birds/train"
+    # hdf5_file = r"datasets/birds/train/data_128x128.hdf5"
+    # create_hdf5_dataset(root_folder, hdf5_file)
+    #
+    # root_folder = r"datasets/birds/test"
+    # hdf5_file = r"datasets/birds/test/data_128x128.hdf5"
+    # create_hdf5_dataset(root_folder, hdf5_file)
+    #
+    # root_folder = r"datasets/birds/valid"
+    # hdf5_file = r"datasets/birds/valid/data_128x128.hdf5"
+    # create_hdf5_dataset(root_folder, hdf5_file)
+    #
+    # root_folder = r"datasets/playing_cards/train"
+    # hdf5_file = r"datasets/playing_cards/train/data_128x128.hdf5"
+    # create_hdf5_dataset(root_folder, hdf5_file)
+    #
+    # root_folder = r"datasets/playing_cards/test"
+    # hdf5_file = r"datasets/playing_cards/test/data_128x128.hdf5"
+    # create_hdf5_dataset(root_folder, hdf5_file)
+    #
+    # root_folder = r"datasets/playing_cards/valid"
+    # hdf5_file = r"datasets/playing_cards/valid/data_128x128.hdf5"
+    # create_hdf5_dataset(root_folder, hdf5_file)
+    pass
