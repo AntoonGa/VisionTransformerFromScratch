@@ -1,7 +1,7 @@
 """
 Author: {author} || Date: {date}
 Features:
-    - SimpleVitClassifier on playing cards dataset
+    - SimpleVitClassifier on playing cards and bird dataset
     - the model does not go over 50% accuracy and overfits, so augmentation is needed
 """
 import torch
@@ -12,7 +12,7 @@ from torchinfo import summary
 
 from core.classifier_models.simplevit import SimpleVitClassifier
 from core.wrappers.dataloader_wrapper import dataloader_wrapper
-from core.wrappers.model_wrapper import Wrapper
+from core.wrappers.trainer_wrapper import Wrapper
 from shared_modules.display_engine import DisplayMetrics
 
 ###########################

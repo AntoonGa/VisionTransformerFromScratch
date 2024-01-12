@@ -12,7 +12,7 @@ from torchinfo import summary
 
 from core.classifier_models.efficientnet_b0 import EfficientNetb0
 from core.wrappers.dataloader_wrapper import dataloader_wrapper
-from core.wrappers.model_wrapper import Wrapper
+from core.wrappers.trainer_wrapper import Wrapper
 from shared_modules.display_engine import DisplayMetrics
 
 ###########################
