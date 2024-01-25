@@ -70,7 +70,6 @@ ignore = [
     "UP032",
     "ERA001", #Found commented-out code
     "S311", # Standard pseudo-random generators are not suitable for security/cryptographic purposes
-
 ]
 
 

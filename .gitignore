@@ -11,3 +11,4 @@ __pycache__/
 /simplevit_mnist/data/
 /datasets/
 profile_results.txt
+/.venv/
