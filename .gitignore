@@ -12,3 +12,4 @@ __pycache__/
 /datasets/
 profile_results.txt
 /.venv/
+/.rnd/
